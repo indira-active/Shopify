@@ -1,0 +1,82 @@
+<!-- Customized product descriptions with injected standard shipping information, return policy, and sizing charts --->
+
+<!-- Tabs --->
+{% assign handle_append = "-size-chart" %}
+{% assign product_size_chart = product.handle | append: handle_append %} 
+{% if pages[product_size_chart].content == "" %}
+	{% assign tab_2_placeholder = true %}
+{% else %}
+	{% assign tab_2_placeholder = false %}
+{% endif %}
+<style>
+  #tab-1, #tab-2, #tab-3, #tab-4, {
+    margin: 0 ; 
+    padding: 0; 
+    font-size: 0.6875em !important; 
+    font-family: 'HelveticaNeue' !important; 
+    color: #000000;
+  }
+
+  div.details li, {
+    padding: 0 ;
+    margin: 0;
+  }
+</style>
+<script>
+  $(document).ready(function() {
+    $('ul.tabs').each(function(){
+      var active, content, links = $(this).find('a');
+      active = links.first().addClass('active');
+      content = $(active.attr('href'));
+      links.not(':first').each(function () {
+        $($(this).attr('href')).hide();
+      });
+      $(this).find('a').click(function(e){
+        active.removeClass('active');
+        content.hide();
+        active = $(this);
+        content = $($(this).attr('href'));
+        active.addClass('active');
+        content.show();
+        return false;
+      });
+    });
+  });
+</script>
+<!-- End Tabs --->
+
+
+{% if settings.product_description_position == "bottom" %}
+        {% if product.description != blank %}
+         <div class="description" itemprop="description">
+          <!-- Tabs --->    
+          <div>
+            <div class="tabs">
+              <ul class="tabs">
+                <li><a href="#tab-1">Details</a></li>
+                <li><a href="#tab-2">Sizing</a></li>
+                <li><a href="#tab-3">Shipping</a></li>
+                <li><a href="#tab-4">Returns</a></li>
+              </ul>
+            </div>
+            <div id="tab-1" class="details">
+            {{ product.description }}
+            </div>
+            <div id="tab-2">
+              {% if tab_2_placeholder == false %}
+              {{ pages[product_size_chart].content }}
+              {% else %}
+              <p>Looks like we haven't added a full chart for this product yet, please chat with us for any sizing concerns.</p>
+              {% endif %}
+            </div>
+            <div id="tab-3">
+            {% include 'shipping' %}
+            </div>
+            <div id="tab-4">
+            {{ pages.returns.content }}
+            </div>
+          </div> 
+          <!-- End Tabs --->   
+         </div>
+        {% endif %}
+      {% endif %}
