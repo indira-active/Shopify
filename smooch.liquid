@@ -1,8 +1,21 @@
 <script> 	
     function loadScript(src, callback) { var s, r, t; r = false; s = document.createElement('script'); s.type = 'text/javascript'; s.src = src; s.onload = s.onreadystatechange = function() { if ( !r && (!this.readyState || this.readyState == 'complete') ) { r = true; callback(); } }; t = document.getElementsByTagName('script')[0]; t.parentNode.insertBefore(s, t); } loadScript('https://cdn.smooch.io/smooch.min.js', function() {
         var skSizeChat = document.getElementById("sk-no-sizing");
-      	var skPurchase = document.getElementById('sk-purchase');
+      	//var skPurchase = document.getElementById('sk-purchase');
       	
+      	// Welcome whisper user after 30s
+      	var timeout;
+        Smooch.on('ready', function(message) {
+          timeout = setTimeout(function() {
+            Smooch.track("sk-welcome-delay");
+          }, 30000);
+        });
+
+        Smooch.on('widget:opened', function() {
+          clearTimeout(timeout);
+        });
+      
+      	// Store users language as property
       	Smooch.on('ready', function() {
             var language = window.navigator.userLanguage || window.navigator.language;
             Smooch.updateUser({
@@ -11,10 +24,11 @@
               }
             });   
     
-            skPurchase.onload = function() {
-            	Smooch.track("sk-purchase");
-          	};
- 
+            //skPurchase.onload = function() {
+            //	Smooch.track("sk-purchase");
+          	//};
+ 			
+          	// Whipser for sizing inquiries  
         	skSizeChat.onclick = function() {
               Smooch.open();
               Smooch.track("sk-no-sizing");
@@ -22,7 +36,7 @@
         });	
 
       	var skPromise = Smooch.init({
-            appToken: "APPTOKENHERE",
+            appToken: "PRIVATEAPPTOKENHERE",
             serviceUrl: "https://app.smooch.io",
           	customText: {
             	introductionText: 'We try to be quick, so ask us anything!',
